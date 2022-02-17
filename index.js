@@ -2,6 +2,9 @@ const mergeImages = require('merge-images');
 const { Canvas, Image } = require('canvas');
 var express = require('express');
 var app = express();
+var cors = require('cors');
+
+app.use(cors());
 
 var AWS = require('aws-sdk')
 
