@@ -6,7 +6,8 @@ var cors = require('cors');
 
 app.use(cors());
 
-var AWS = require('aws-sdk')
+var AWS = require('aws-sdk');
+const { json } = require('body-parser');
 
 const DO_SPACES_ENDPOINT = "https://sgp1.digitaloceanspaces.com";
 const DO_SPACES_KEY = 'QX3E2BTZHOIXEVMMPTYB';
@@ -25,10 +26,12 @@ const getBuffer = (testImage) => {
 
 app.post('/', async function (req, res) {
 
-    let phone = req.body.phone;
+    console.log(req.body);
 
-    if (req.body.imgList) {
-        let list = req.body.imgList.map((ele) => {
+    let phone = req.body.phone;
+    let imgList = JSON.parse(req.body.imgList);
+    if (imgList) {
+        let list = imgList.map((ele) => {
             return '.' + ele;
         })
 
