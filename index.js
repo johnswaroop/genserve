@@ -4,11 +4,10 @@ var express = require('express');
 var app = express();
 var cors = require('cors');
 
+
 app.use(cors());
 
 var AWS = require('aws-sdk');
-const { json } = require('body-parser');
-
 const DO_SPACES_ENDPOINT = "https://sgp1.digitaloceanspaces.com";
 const DO_SPACES_KEY = 'QX3E2BTZHOIXEVMMPTYB';
 const DO_SPACES_SECRET = 'ksZyRKGHYg4Kxd/15PMPk1UT26Xvt6rtNEqFlBZHtuU';
@@ -23,6 +22,30 @@ const getBuffer = (testImage) => {
     return buf;
 }
 
+app.post('/profile', async function (req, res) {
+    let phone = req.body.phone;
+    let img = req.body.img
+    if (img) {
+        console.log("startuplading");
+        let type = img.match(/[^:/]\w+(?=;|,)/)[0];
+        let buf = getBuffer(img);
+        s3.putObject({
+            Bucket: DO_SPACES_NAME, Key: `profile_${phone}.${type}`, Body: buf, ACL: 'public-read', ContentEncoding: 'base64',
+            ContentType: `image/${type}`
+        }, (err, data) => {
+            if (err) {
+                console.log(err);
+                res.json({ status: "error" })
+            };
+            console.log("Your file has been uploaded successfully!", data);
+            res.json({ "status": "ok" });
+         
+        });
+    }
+    else {
+        res.json({ status: "error" })
+    }
+})
 
 app.post('/', async function (req, res) {
 
