@@ -3,11 +3,13 @@ const { Canvas, Image } = require('canvas');
 var express = require('express');
 var app = express();
 var cors = require('cors');
+var bodyParser = require('body-parser')
 
 
 app.use(cors());
 
 var AWS = require('aws-sdk');
+
 const DO_SPACES_ENDPOINT = "https://sgp1.digitaloceanspaces.com";
 const DO_SPACES_KEY = 'QX3E2BTZHOIXEVMMPTYB';
 const DO_SPACES_SECRET = 'ksZyRKGHYg4Kxd/15PMPk1UT26Xvt6rtNEqFlBZHtuU';
@@ -15,7 +17,8 @@ const DO_SPACES_NAME = 'savenft';
 
 const s3 = new AWS.S3({ endpoint: DO_SPACES_ENDPOINT, accessKeyId: DO_SPACES_KEY, secretAccessKey: DO_SPACES_SECRET });
 
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
 
 const getBuffer = (testImage) => {
     let buf = Buffer.from(testImage.replace(/^data:image\/\w+;base64,/, ""), 'base64');
