@@ -17,8 +17,8 @@ const DO_SPACES_NAME = 'savenft';
 
 const s3 = new AWS.S3({ endpoint: DO_SPACES_ENDPOINT, accessKeyId: DO_SPACES_KEY, secretAccessKey: DO_SPACES_SECRET });
 
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb'}));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb' }));
 
 const getBuffer = (testImage) => {
     let buf = Buffer.from(testImage.replace(/^data:image\/\w+;base64,/, ""), 'base64');
@@ -42,7 +42,7 @@ app.post('/profile', async function (req, res) {
             };
             console.log("Your file has been uploaded successfully!", data);
             res.json({ "status": "ok" });
-         
+
         });
     }
     else {
@@ -65,6 +65,41 @@ app.post('/', async function (req, res) {
             Canvas: Canvas,
             Image: Image
         })
+
+        if (genImage) {
+            console.log("startuplading");
+            let buf = getBuffer(genImage);
+            s3.putObject({
+                Bucket: DO_SPACES_NAME, Key: `nft_${phone}.png`, Body: buf, ACL: 'public-read', ContentEncoding: 'base64',
+                ContentType: `image/png`
+            }, (err, data) => {
+                if (err) {
+                    console.log(err);
+                    res.json({ status: "error" })
+                };
+                console.log("Your file has been uploaded successfully!", data);
+                res.json({ "status": "ok" });
+            });
+        }
+        else {
+            res.json({ status: "error" })
+        }
+    }
+    else {
+        res.json({ status: "error" })
+    }
+})
+
+app.post('/direct', async function (req, res) {
+
+    console.log(req.body);
+
+    let phone = req.body.phone;
+    let bs64Img = req.body.img;
+    let imgList = JSON.parse(req.body.imgList);
+    if (imgList) {
+      
+        let genImage = bs64Img;
 
         if (genImage) {
             console.log("startuplading");
